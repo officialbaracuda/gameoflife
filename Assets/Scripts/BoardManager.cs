@@ -15,7 +15,7 @@ public class BoardManager : MonoBehaviour
     public GameObject cube;
     public int columns = 100;
     public int rows = 100;
-
+    ObjectPooler objectPooler;
     private Cell[,] grid;
 
     private void Awake()
@@ -25,6 +25,8 @@ public class BoardManager : MonoBehaviour
 
     void Start()
     {
+        objectPooler = ObjectPooler.Instance;
+
         // Setting up the grid. If cell is alive then instantiate a cube at cell's point.
         for (int i = 0; i < columns; i++)
         {
@@ -35,11 +37,19 @@ public class BoardManager : MonoBehaviour
                 cell.y = 0;
                 cell.z = j;
                 Vector3 pos = new Vector3(cell.x, cell.y, cell.z);
-                cell.isAlive = Random.value <= 0.13 ? true : false;
+
+                //Make a pattern - noob edition
+                //Have to implement OnClick
+                if (cell.x == 49 && cell.z == 49) cell.isAlive = true;
+                else if (cell.x == 49 && cell.z == 50) cell.isAlive = true;
+                else if (cell.x == 50 && cell.z == 51) cell.isAlive = true;
+                else if (cell.x == 50 && cell.z == 52) cell.isAlive = true;
                 grid[i, j] = cell;
+
+                //Spawning the cubes
                 if (cell.isAlive)
                 {
-                    Instantiate(cube, pos, Quaternion.identity);
+                    objectPooler.SpawnFromPool("Cube", pos, Quaternion.identity);
                     // Debug.Log("The Cell [" + i + ", " + j + "] has instantiated with pos " + pos.x + " " + pos.y + " " + pos.z);
                 }
             }
