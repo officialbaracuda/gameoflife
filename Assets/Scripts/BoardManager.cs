@@ -11,6 +11,7 @@ public class BoardManager : MonoBehaviour
         public float z;
         public bool isAlive;
         public int aliveNeighbours;
+        public GameObject cubicle;
     }
     public GameObject cube;
     public int columns = 100;
@@ -38,16 +39,20 @@ public class BoardManager : MonoBehaviour
                 cell.z = j;
                 Vector3 pos = new Vector3(cell.x, cell.y, cell.z);
 
-                //Make a pattern - noob edition
-                //Have to implement OnClick
-                if (Random.Range(0, 2)==1)cell.isAlive = true;
-                grid[i, j] = cell;
                 //Spawning the cubes
+                cell.cubicle = objectPooler.SpawnFromPool("Cube", pos, Quaternion.identity);
+                // Debug.Log("The Cell [" + i + ", " + j + "] has instantiated with pos " + pos.x + " " + pos.y + " " + pos.z);
+                
+                //randomizing cubes
+                if (Random.Range(0, 2) == 1) cell.isAlive = true;
+
+
+                grid[i, j] = cell;
                 if (cell.isAlive)
                 {
-                    objectPooler.SpawnFromPool("Cube", pos, Quaternion.identity);
-                    // Debug.Log("The Cell [" + i + ", " + j + "] has instantiated with pos " + pos.x + " " + pos.y + " " + pos.z);
+                    cell.cubicle.SetActive(true);
                 }
+                else cell.cubicle.SetActive(false);
             }
         }
     }
@@ -57,31 +62,33 @@ public class BoardManager : MonoBehaviour
         //apply rules when space is pressed
         if (Input.GetKeyDown("space"))
         {
-            Debug.Log(grid[5,5].isAlive +" " + grid[5, 5].aliveNeighbours);
+            Debug.Log(grid[5, 5].isAlive + " " + grid[5, 5].aliveNeighbours);
             for (int i = 0; i < columns; i++)
             {
                 for (int j = 0; j < rows; j++)
                 {
                     CheckNeighbours(new Vector3(i, 0, j));
-                    if (grid[i, j].isAlive)
-                    {
-                        if (grid[i, j].aliveNeighbours < 2) grid[i, j].isAlive = false;
-                        //rule 2 doesn't require action
-                        else if (grid[i, j].aliveNeighbours > 3) grid[i, j].isAlive = false;
-                    }
-                    else
-                    {
-                        if (grid[i, j].aliveNeighbours == 3) grid[i, j].isAlive = true;
-                    }
 
-                    grid[i, j].x = i;
-                    grid[i, j].y = 0;
-                    grid[i, j].z = j;
-                    Vector3 pos = new Vector3(grid[i, j].x, grid[i, j].y, grid[i, j].z);
+                    //rules 1 and 3
                     if (grid[i, j].isAlive)
                     {
-                        objectPooler.SpawnFromPool("Cube", pos, Quaternion.identity);
-                        // Debug.Log("The Cell [" + i + ", " + j + "] has instantiated with pos " + pos.x + " " + pos.y + " " + pos.z);
+                        if (grid[i, j].aliveNeighbours < 2)
+                        {
+                            grid[i, j].isAlive = false;
+                            grid[i, j].cubicle.SetActive(false);
+                        }
+                        //rule 2 doesn't require action
+                        else if (grid[i, j].aliveNeighbours > 3)
+                        {
+                            grid[i, j].isAlive = false;
+                            grid[i, j].cubicle.SetActive(false);
+                        }
+                    }
+                    // rule 4
+                    if (grid[i, j].aliveNeighbours == 3 && !grid[i, j].isAlive)
+                    {
+                        grid[i, j].isAlive = true;
+                        grid[i, j].cubicle.SetActive(true);
                     }
                 }
             }
