@@ -60,7 +60,7 @@ public class BoardManager : MonoBehaviour
     void FixedUpdate()
     {
         //apply rules when space is pressed
-        if (Input.GetKeyDown("space"))
+        if (Input.GetKey("space"))
         {
             Debug.Log(grid[5, 5].isAlive + " " + grid[5, 5].aliveNeighbours);
             for (int i = 0; i < columns; i++)
