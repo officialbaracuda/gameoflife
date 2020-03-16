@@ -57,7 +57,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    void Update()
     {
         //apply rules when space is pressed
         if (Input.GetKey("space"))
